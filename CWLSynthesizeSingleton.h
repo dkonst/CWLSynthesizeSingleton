@@ -43,31 +43,31 @@
 
 #define CWL_SYNTHESIZE_SINGLETON_FOR_CLASS_WITH_ACCESSOR(classname, accessorMethodName) \
  \
-static classname *accessorMethodName##Instance = nil; \
+static classname *_accessorMethodName = nil; \
  \
 + (classname *)accessorMethodName \
 { \
 	@synchronized(self) \
 	{ \
-		if (accessorMethodName##Instance == nil) \
+		if (_accessorMethodName == nil) \
 		{ \
-			accessorMethodName##Instance = [super allocWithZone:NULL]; \
-			accessorMethodName##Instance = [accessorMethodName##Instance init]; \
+			_accessorMethodName = [super allocWithZone:NULL]; \
+			_accessorMethodName = [_accessorMethodName init]; \
 			method_exchangeImplementations(\
-				class_getClassMethod([accessorMethodName##Instance class], @selector(accessorMethodName)),\
-				class_getClassMethod([accessorMethodName##Instance class], @selector(cwl_lockless_##accessorMethodName)));\
+				class_getClassMethod([_accessorMethodName class], @selector(accessorMethodName)),\
+				class_getClassMethod([_accessorMethodName class], @selector(cwl_lockless_##accessorMethodName)));\
 			method_exchangeImplementations(\
-				class_getInstanceMethod([accessorMethodName##Instance class], @selector(init)),\
-				class_getInstanceMethod([accessorMethodName##Instance class], @selector(cwl_onlyInitOnce)));\
+				class_getInstanceMethod([_accessorMethodName class], @selector(init)),\
+				class_getInstanceMethod([_accessorMethodName class], @selector(cwl_onlyInitOnce)));\
 		} \
 	} \
 	 \
-	return accessorMethodName##Instance; \
+	return _accessorMethodName; \
 } \
  \
 + (classname *)cwl_lockless_##accessorMethodName \
 { \
-	return accessorMethodName##Instance; \
+	return _accessorMethodName; \
 } \
 \
 + (id)allocWithZone:(NSZone *)zone \
